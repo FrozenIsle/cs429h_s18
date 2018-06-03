@@ -1,0 +1,39 @@
+#include <stdio.h>
+
+#include "go.h"
+
+void factorials(shared_ptr<Channel<long>> facts) {
+    long f = 1;
+    long n = 0;
+
+    while (1) {
+        facts->send(f);
+        n++;
+        f = f * n;
+    }
+}
+
+void sumOfFactorials(shared_ptr<Channel<long>> out) {
+    auto facts = Channel<long>::make();
+    go([=]() { factorials(facts); });
+
+    long sum = 0;
+    while (1) {
+        out->send(sum += facts->receive());
+    }
+}
+
+int main() {
+    auto ch1 = Channel<long>::make();
+    auto ch2 = Channel<long>::make();
+
+    go([=]() { factorials(ch1); });
+    go([=]() { sumOfFactorials(ch2); });
+
+    for (long i = 0; i<20; i++) {
+        long f = (long) ch1->receive();
+        long s = (long) ch2->receive();
+        printf("i=%ld, f=%ld, s=%ld\n",i,f,s);
+    }
+    return 0;
+}

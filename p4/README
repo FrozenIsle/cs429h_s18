@@ -1,0 +1,86 @@
+Due date:
+    2/13/2018 @ 11:59pm for test case
+    2/14/2018 @ 11:59pm working code and report
+
+Objective:
+~~~~~~~~~~
+
+- Improve your assembly skills
+
+Assignment:
+~~~~~~~~~~~
+
+(1) Answer the question in REPORT.txt
+
+(2) Add a test case (<csid>.fun, <csid>.args, and <csid>.ok, less then 2000 characters each)
+
+     - <csid>.fun contains the fun code
+     - <csid>.args contains the command line arguments to pass to the fun executable
+     - <csid>.ok contains the expected output
+
+(3) Write a compiler for a simple language
+
+The language is the same as in p3 with one change:
+
+- A new global variable "argc" is automatically set to the value of main's argc
+
+
+The command line interface:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+./p4 <name>
+
+The compiler (p4) looks for a file named <name>.fun and compiles it,
+produces an executable file named <name>
+
+For example:
+
+let's say the file tx.fun contains
+
+x = argc + 1
+print x
+
+running "./p4 tx" produces a file named tx
+
+running "./tx" prints 1
+running "./tx hello" prints 2
+
+Intermediate files:
+~~~~~~~~~~~~~~~~~~~
+
+Feel free to create temporary files with *.s and *.o extensions but please don't
+commit them to git
+
+To compile:
+~~~~~~~~~~~
+
+    make
+
+To run test:
+~~~~~~~~~~~~
+
+    make clean test
+
+To run one test (e.g. t1):
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    make clean t1.result
+
+To make the output less noisy:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    make -s clean test
+
+To debug the compiler
+~~~~~~~~~~~~~~~~~~~~~
+
+    make
+    gdb ./p4
+    (gdb) run t0
+
+To debug the compiled program
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    ./p4 t0
+    gdb ./t0
+

@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <inttypes.h>
+#include <setjmp.h>
+
+#include "go.h"
+
+int counter = 0;
+jmp_buf buf;
+
+void h(shared_ptr<Channel<long>> ch) {
+    ch->send(counter);
+    if (counter < 10) {
+        counter ++;
+        longjmp(buf,1);
+    }
+}
+
+void g(shared_ptr<Channel<long>> ch) {
+    h(ch);
+}
+
+void f(shared_ptr<Channel<long>> ch) {
+    g(ch);
+}
+
+int main() {
+    auto ch = Channel<long>::make();
+    go([=]() {
+        setjmp(buf);
+        f(ch);
+    });
+
+    while (1) {
+        printf("%ld\n",ch->receive());
+    }
+
+    printf("never\n");
+
+    return 0;
+}

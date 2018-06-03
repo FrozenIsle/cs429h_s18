@@ -1,0 +1,7 @@
+- Write a program that takes about 60 seconds to run in your interpreter
+  then run the compiled version and measure its execution time.
+
+  * What is runtime for both versions?
+  * Try to explain the difference
+
+- Why is it a good idea to "mov $0,%rax" before calling printf?

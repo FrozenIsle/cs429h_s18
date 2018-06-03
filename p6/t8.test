@@ -1,0 +1,67 @@
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <inttypes.h>
+
+#include "go.h"
+
+shared_ptr<Channel<int>> ints() {
+    auto out = Channel<int>::make();
+    go([=]() {
+        int x = 0;
+        while(1) {
+            out->send(x);
+            x++;
+        }
+    });
+    return out;
+}
+
+bool isPrime(int v) {
+    switch(v) {
+    case 0: return false;
+    case 1: return false;
+    case 2: return true;
+    default:
+        if ((v % 2) == 0) return false;
+        for (int c = 3; c < v/2; c++) {
+            if ((v % c) == 0) return false;
+        }
+    }
+    return true;
+}
+
+template<typename T>
+shared_ptr<Channel<T>> skip(int n, shared_ptr<Channel<T>> in) {
+    auto out = Channel<T>::make();
+    go([=]() {
+        for (int i=0; i<n; i++) in->receive();
+        while (1) {
+            out->send(in->receive());
+        }
+    });
+    return out;
+}
+
+shared_ptr<Channel<int>> primes() {
+    auto out = Channel<int>::make();
+    go([=]() {
+        auto the_ints = ints();
+        while (1) {
+            int v = the_ints->receive();
+            if (isPrime(v)) out->send(v);
+            v++;
+        }
+    });
+    return out;
+}
+
+int main() {
+    auto the_primes = skip(1000,primes());
+
+    for (int i=0; i<12; i++) {
+        printf("%d\n",the_primes->receive());
+    }
+    return 0;
+}

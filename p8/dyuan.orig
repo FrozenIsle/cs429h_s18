@@ -1,0 +1,27 @@
+movl 97 1
+movl -3 2
+sub 1 2 3
+sub 3 0 0
+movl 0 1
+movl 0 2
+movl 0 3
+movl 97 1
+movl 102 2
+movl 26 4
+movl 34 5
+movl -1 6
+movl -5 3
+jns 3 5
+sub 2 0 0
+sub 3 6 3
+jz 0 4
+movl 10 7
+movh -1 7
+movl 12 8
+movh -1 8
+st 7 1
+st 8 2
+ld 8 9
+sub 9 0 0
+ld 7 9
+sub 9 0 0

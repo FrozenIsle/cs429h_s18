@@ -1,0 +1,168 @@
+Due date: 1/31/2018 @ 11:59pm
+
+Objective:
+~~~~~~~~~~
+
+- Work with strings, pointers, structs, and the dynamic heap
+
+Assignment:
+~~~~~~~~~~~
+
+(1) Answer the question in REPORT.txt
+
+(2) Add a test case
+
+(3) Finish the interpreter for a simple language
+
+Language Overview:
+~~~~~~~~~~~~~~~~~~
+
+- Source character encoding: A program is represented as string of ASCII
+characters passed as a command line argument to the interpreter
+
+- Lexical rules: The language has the following tokens.
+
+  * keywords: "if" "else" "while" and "print"
+
+  * operators and spacial characters: = == ( ) { } + * ;
+
+  * identifiers: start with lower case letters followed by a sequence of
+                 lower case letters and numbers.
+
+         examples: x hello h123 xy3yt abc123
+
+  * immediate values: sequences of digits representing integers. They always
+                 start with a digit but could contain '_' characters that are
+                 ignored
+
+         examples: 12 0 12_234
+
+- Syntax: Our syntax is C-like. You're given most of the code
+  but you need to change it in order to implement the "if" and "while"
+  statements. Things to keep in mind about our language:
+
+  * ';' is optional
+
+  * we only have assignment, if, while, and print statements
+
+  * the following operators are supported '*', '+', '=='
+
+- Error reporting: we will ignore errors and restrict ourselves to valid programs
+
+Language semantics:
+~~~~~~~~~~~~~~~~~~~
+
+- All variables are 64 bit unsigned integers
+
+- '+' performs unsigned integer addition (mod 2^64)
+
+- '*' performs unsigned integer multiplication (mod 2^64)
+
+- 'x == y' returns 1 if x and y contain the same bit pattern and 0 otherwise
+
+- 'x = <exp>' assigns the result of evaluating '<exp>' to 'x' and prints the new
+  value of 'x'
+
+- The 'if' statement has one of the forms:
+
+     if <exp> <statement>
+     
+   or
+ 
+     if <exp> <statement> else <statement>
+
+   <exp> is considered true if it evaluates to a non-zero value, false otherwise
+
+- The 'while' statement has the form:
+
+    while <exp> <statement>
+
+   <exp> is considered true if it evaluates to a non-zero value, false otherwise
+
+- '{' and '}' are used to create block statements, making a sequence of
+  statements appear like a single one
+
+- The 'print' statement has the form:
+
+    print <exp>
+
+  It prints the numerical value of the expression followed by a new line
+
+What you need to do:
+~~~~~~~~~~~~~~~~~~~~
+
+- Finish the implementation of the lexer. In order to keep the implementation
+  simple, the code assumes that there is a global variable that represents
+  the current valid token, starting with the first token in the program.
+
+  In order to finish the lexer, you need to implement the following functions:
+
+    char *remaining(); // returns the program text starting to the current token
+                       // used for error reporting
+
+    enum Token peek(); // ensures that the cursor is pointing at a valid token,
+                          returns its kind
+
+    void consume();
+                       // consume the current token, move the cursor to the
+                       // next valid token. Must handle end of string.
+
+    char *getId();     // if current token is an identifier, return it as a
+                          string
+
+    uint64_t getInt(); // if current token is an immediate value, return the value
+
+- The language syntax is expressed using recursive functions starting with
+  the "program()" function. You need to understand what it's doing and you'll
+  need to make some changes to it in order to implement the "if" and "while"
+  statements.
+
+- You'll need to implement a symbol table, exposed using those two functions:
+
+    uint64_t get(char *id);             // return the value of the given identifier
+
+    void set(char *id, uint64_t value); // set the value of the given identifier
+
+Examples:
+~~~~~~~~~
+
+./p2 "x = 10; print x"
+10
+
+Files you're allowed to change:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   p2.c
+
+Files you're supposed to leave alone:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Everything else
+   
+To compile:
+~~~~~~~~~~~
+
+    make
+
+To run test:
+~~~~~~~~~~~~
+
+    make clean test
+
+To run one test (e.g. t1):
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    make clean t1.run
+
+To make the output less noisy:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    make -s clean test
+
+To debug with gdb
+~~~~~~~~~~~~~~~~~
+
+    make
+    gdb ./p2
+    (gdb) run "x = 100; a = 30;"
+

@@ -1,0 +1,96 @@
+Due: 4/18/2018 @ 11:59pm
+
+Assignment:
+~~~~~~~~~~~
+
+(1) Finish the implementation of micro-benchmarks used to estimate the
+    performance characteristics of an x86 processor.
+
+(2) Implement a simple matrix algorithm and make it run as fast as you can
+
+(3) Answer the questions in REPORT.txt
+
+Performance characterization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We need to understand the performance of some x86 instructions
+
+     add
+     mov <mem>,reg
+     imul
+     div
+     nop
+
+
+For each instruction, we need to figure out:
+
+    - latency: how long does it take to resolve a RAW dependency
+
+              add %rax,%rbx    // produces %rbx
+              add %rbx,...     // uses %rbx
+
+    - throughput: how many instances of this instruction can run per cycle
+
+              // all instructions are independent and the processor
+              // is free to run as many of them per cycle as it could
+              add %rax,%rax
+              add %rbx,%rbx
+              add %rcx,%rcx
+              ...
+
+For that you need to implement a set of functions (in sstuff.S):
+
+    depAdds (Performs a number of dependent adds and return their count)
+    indepAdds (performs a number of independent adds and return their count)
+    depMuls (imul)
+    indepMuls (imul)
+    depDivs (div)
+    indepDivs (div)
+    depLoads (mov <memory>,<reg>)
+    indepLoads (mov <memory>,<reg>)
+    nops (nop)
+
+Each function should be written in a way that isolates the quantity being
+measured as much as possible. This is usually done by performing the instruction
+repeatedly in order to minimize the impact of loop and function call overhead.
+
+Your implementations are expected to perform the instruction being measured
+"n" times and return "n" (1000-10000 is a typical value for "n")
+
+The main program will call your functions repeatedly and compute the latency
+and throughput. The results are reported in nano-seconds and in
+processor cycles
+
+Matrix balance optimization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We define matrix balance of a square matrix as the number
+of upper-triangle (excluding the diagonal) elements for which:
+
+      matrix[i][j] == matrix[j][i]
+
+You are given a naive implementation of balance (in cstuff.c) and you're
+expected to replace with the fastest implementation you could come up with
+
+The main program will call your function and estimates the cost per comparison
+
+To compile:
+~~~~~~~~~~~
+
+    - make
+
+To run:
+
+    - make run
+
+Files:
+
+    - main.c - the main program, leave it alone
+    - cstuff.c - put any C code you need here
+    - sstuff.c - put any assemble code you need here
+
+Hints:
+
+    - You need to run the things you're measuring in a tight loop
+    - Don't let other instructions pollute your measurements.
+    - Processors can and do run multiple instructions per cycle.

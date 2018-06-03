@@ -1,0 +1,18 @@
+#include <stdio.h>
+#include <inttypes.h>
+
+#include "go.h"
+
+int main() {
+    auto ch = Channel<long>::make();
+    go([=]() {
+        ch->send(ch->receive()+1);
+    });
+    ch->send(100);
+    printf("%ld\n",ch->receive());
+    printf("this should be the last line\n");
+    ch->send(0);
+    printf("should never see this\n");
+
+    return 0;
+}

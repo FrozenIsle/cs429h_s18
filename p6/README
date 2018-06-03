@@ -1,0 +1,258 @@
+Due date:
+    2/27/2018 @ 11:59pm for test case
+    2/28/2018 @ 11:59pm working code and report
+
+Objective:
+~~~~~~~~~~
+
+- Learn some C++
+
+Why:
+~~~~
+
+C++ builds on C and adds a number of useful abstractions (classes, templates,
+exceptions, closures, automatic reference counting, etc). It is carefully
+designed to allow (as close to) 0-cost implementations of those abstractions.
+
+Popular languages likes C# and Java are direct descendants of C++ that stress
+other aspects like simplicity, better cross-platform support, simpler memory
+management, more standardized libraries, etc ... at a price.
+
+C++ is easy to learn but hard to master: it is full of nooks and crannies and
+dark corners and C++ compilers produce notoriously confusing and hard to parse
+error messages.
+
+Like C and assembly, one could have a fruitful career without touching C++
+but your education and your ability to understand the tradeoffs you're
+making without getting a basic understanding if it and how to evolved.
+
+It used (and continues) to be the case that if you wanted to do systems
+programming (e.g. developing a kernel or other parts of an OS), you'd
+immediately gravitate towards a mix of C++, C, and assembly but many modern
+languages are trying to elbow their way in. Most notably Rust, Go, and
+to a lesser extent Swift. You should make an effort to read about those
+languages and become familiar with them and the reasons for their existence.
+
+Description:
+~~~~~~~~~~~~
+
+We will reimplement our c-routines using C++ constructs for more convenience
+and safety. The features we will use are:
+
+- templates: to add type-safety to channels, allowing us to get rid of the
+  ugly and unsafe Value union:
+
+    Channel<int>::make();     // create a channel that can only contain ints
+    Channel<string>::make();  // create a channel that can only contain strings
+
+- type inference: allows us to omit type specification if the compiler could
+  infer it without sacrificing static and strong typing
+
+    auto ch = Channel<char>::make();
+
+- classes and methods: in order to have information hiding and scoped names
+
+    auto ch = Channel<char>::make();
+    ...
+    ch->send('x');
+
+- overriding: in order to support varied types, optional arguments, etc.
+
+    auto ch = Channel<char>::make();
+
+    auto c = ch->receive();      // returns immediately if the channel is
+                                 // poisoned. Returned value is undefined
+
+    bool flag;
+    auto d = ch->receive(&flag); // returns immediately if the channel is
+                                 // poisoned. flag tells us what happened.
+
+- automatic reference counting: to automatically delete objects when they
+  become unreachable.
+
+    shared_ptr<Channel<long>> ch = Channel<long>::make();
+
+- more disciplined memory management:
+
+    
+    Foo* ptr = (Foo*) malloc(sizeof(Foo));
+    // initialize
+    ptr->a = ...;
+    ptr->b = ...;
+
+
+    // Becomes
+
+    auto ptr = new Foo();        // runs the constructor for initialization
+
+- closures: anonymous functions that capture their environment
+
+    int x = 100;
+
+    auto func = [=](int v) {
+        printf("%d\n",x+v);
+    };
+
+    func(1);     // prints 101
+    func(2);     // prints 102
+
+Starting a c-routine:
+~~~~~~~~~~~~~~~~~~~~~
+
+You start a c-routine using the go() function. For example:
+
+    void f1(void) {
+        printf("I'm a c-routine\n");
+    }
+
+    int main() {
+        go(f1);
+        ...
+    }
+
+    Or using closures:
+
+    auto s = "Bob";
+
+    go([=]() {
+        printf("co-routine says %s\n",s);
+    });
+
+    The associated channel in p5 was a hack that allowed us to pass initial
+    arguments to the newly created c-routine. We can use closures for that
+    so we will drop the associated channel.
+
+Channels:
+~~~~~~~~~~
+
+We have 4 significant changes from p5:
+
+- Channels are typed (e.g. Channel<std::string>)
+
+- Channel has a private constructor. The only way to create channel is using
+  the "make" method:
+
+     shared_ptr<Channel<float>> ch = Channel<float>::make();
+
+- A poisoned channel doesn't automatically terminate c-routines that touch it.
+  Instead, the send and receive methods take an optional pointer to a flag
+  variable. This variable reflects the reason for returning from send/receive:
+
+    * true => send/receive returned because the channel was poisoned
+    * false => send/receive returned because the work was accomplished
+
+- There are no associated channels, all channels must be created explicitly
+
+Complete API
+~~~~~~~~~~~~
+
+Look in go.h for details
+
+template <typename T>
+class Channel {
+public:
+    // poison the channel
+    void poison() {
+        ...
+    }
+
+    // receive a value. Blocks until:
+    //    - matched with a send
+    //         returns the value in the matching send()
+    //         sets flag to false
+    //    - the channel is poisoned
+    //         returns an undefined value
+    //         sets flag to true
+    T receive(bool* flag) {
+        ...
+    }
+
+    // receive a value. Blocks until:
+    //    - matched with a send
+    //         returns the value in the matching send()
+    //    - the channel is poisoned
+    //         returns an undefined values
+    T receive() {
+        ...
+    }
+
+    // send a value. Blocks until:
+    //     - matched with a receive
+    //          sets flag to false
+    //     - the channel is poisoned
+    //          sets flag to true
+    void send(T v, bool* flag) {
+        ...
+    }
+
+    // send a value. Blocks until:
+    //     - matched with a receive
+    //     - the channel is poisoned
+    void send(T v) {
+        ...
+    }
+
+    // return a shared_ptr to a new channel
+    static shared_ptr<Channel<T>> make() {
+        ...
+    }
+
+};
+
+// Create a new c-routine that runs the body of the given "callable" object
+extern void go(std::function<void()> func);
+
+What you need to do:
+~~~~~~~~~~~~~~~~~~~~
+
+(1) Answer the question in REPORT.txt
+
+(2) Add a test case (<csid>.test and <csid>.ok, less then 2000 characters each)
+
+     - <csid>.test contains a main program written in C++
+     - <csid>.ok contains the expected output
+
+Please keep in mind that your test case can't rely in the specific order
+of interleaving between c-routines, only on the causal relationships
+established by channel communications:
+
+     - a message can not be received before it is sent
+
+The safest thing to do is to limit printing to a single c-routine
+
+To compile:
+~~~~~~~~~~~
+
+    make
+
+To run test:
+~~~~~~~~~~~~
+
+    make clean test
+
+To build one test case (e.g. t1)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    make t1
+
+    you can then run it
+
+    ./t1
+
+To see the results of one test (e.g. t1):
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    make clean t1.result
+
+To make the output less noisy:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    make -s clean test
+
+To debug a test
+~~~~~~~~~~~~~~~
+
+    make t0
+    gdb ./t0
+
+    It is a good idea to replace all -O3 in the Makefile with -O0

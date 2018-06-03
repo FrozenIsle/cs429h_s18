@@ -1,0 +1,116 @@
+What did you propose?
+
+We want to add on to the fun language we created in p3. Namely, we want to
+include different data types like strings, doubles, characters, etc. We also
+want to incorporate local variables and global variables. Finally, we want to
+include parameters for functions, and then utilize them within the function but
+not affecting the variable that is being passed in.
+
+
+What did you do?
+
+We first implemented and debugged our original p3 implementation in Go. This
+allowed us to pass all of the p3 test cases with the assumption that all the
+variables were uint64’s. We also correctly implement different types for p3. We
+kept the original uint64 type, which we refer to as an “int”, but we added
+support for string, characters, and floats. We implemented other operands as
+well, such as division, greater than, and less than. Since we added more types,
+we also added type checking, type inferencing, and type conversion. In regards
+to type inferencing, we can automatically detect whether a variable will be an
+int or a float because of our tokenizer. We can also tell if there is supposed
+to be a string or character because they must have double quotes around strings
+and single quotes around characters.
+
+We added support between types, specifically between strings and ints/floats. We
+allow for string multiplication and division, which is just either duplication
+the string however many times needed or taking a certain portion of the string.
+
+We added a for loop function as well, which functions very similarly to how for
+loops in our languages work.
+
+We tried to implement different scopes in our implementation. We also tried to
+implement different parameters for functions.
+
+What worked?
+
+We finished the basic implementation of p3 in Go. This allowed us to pass all of
+the p3 test cases, with the assumption that all the types were uint64’s (our
+“int”). We then implemented types, which work. Our type inferencing also works
+completely, removing the need for keywords as we automatically assuming the type
+depending on if there is a decimal or not and whether it has quotation marks
+around it/how many it has. We also have a working type checking and type
+conversion, as well as working cross-type interaction. Primarily, we have string
+concatenation, string multiplication, and string division.
+
+Our for loops work, as well as the less than and greater than symbols. They
+allow us to do loops and conditionals more effectively.
+
+What didn’t work?
+
+Our call stack didn’t work, and thus our scope didn’t work properly. We think
+this is mainly a problem with the way we dealt with nested functions, as we ran
+into issues with that.
+
+Our parameters also didn’t work properly, as we started to change everything in
+regards to tokenizing/expression and realized that we would have to completely
+rewrite those functions as well as add a lot of helper functions to enable
+support for this. We felt this was a bit beyond what we expected it to be and
+could not implement it in time.
+
+However, the theoretics of parameter/local variables is simple. For each
+function call, we can allocate a map for variables scoped within the call. This
+way, we simulate how functions allocate stack frames for their parameters.
+
+What did you learn?
+
+Go vs. Rust
+
+Go is a lot simpler of a language than Rust. There are some C like things we do
+miss from Rust, but Go allows us a lot more freedom in terms of writing code.
+There was some annoying things like dealing with runes and figuring out how
+structs and enums work in Go. We felt like Go allowed for a lot simpler code and
+was a lot more intuitive than Rust. However, based on a couple of our own tests
+for pd vs pc, we found that Rust was generally faster than Go. This is probably
+because Rust forces the user to write much more nuanced code and think more
+about how the code works together. Of course, Go is mainly written for
+concurrency because it allows us to have go-routines. Our implementation of p3
+in Go didn’t allow for us to really explore the idea of go-routines since they
+would likely mess with the interpreter, but if we had access to those, we
+believe that Go would be better optimized for running these routines than Rust.
+Thus, in conclusion, we think Go would be a better language to do quick projects
+and handles concurrency very well, allowing for quick development due to its
+simplicity and readability. Rust is better for things that need good memory
+safety and high performance, like operating systems.
+
+Go
+
+We learned a lot about how other programming languages work in this assignment.
+We’ve had experience with Java, Rust, C, and C++, but Go seemed to be another
+beast, not having certain types and loops that made our life a little harder. It
+seemed really simple to learn but at the same time each language has its nuances
+that make it unique. Learning another programming language by itself is always a
+challenge, especially given a time restraint, but we managed to learn enough to
+be able to implement our project. We think Go is really useful and great for
+quick development that is easily shareable. Reading Go code is much more
+intuitive than reading Rust code, allowing for us to collaborate more easily
+since we actually understood what the code each of us wrote did. The only regret
+we have is that our project wasn’t better suited for go-routines, as that is one
+of the coolest features of go we wanted to play with.
+
+Expanding a Language
+
+Since we tried to implement local and global variables, we learned a lot about
+call stacks and how they worked, and tried to implement it in our interpreter.
+However, we ran into a lot of issues with the stack and dealing with nested
+functions, so we scraped scope. We thought our implementation of different types
+was unique and cool, as we basically had a struct that contained all of the
+information for the type as well as the type itself in a String, allowing us to
+keep most of the expression, e1, e2, e3, and e4 functions intact. We slowly
+integrated the different parts of our language to our expression, making sure we
+preserved things like order of operations, parenthesis, etc. as we parsed and
+interpreted the data.
+
+We also learned a lot about how parsers work in general. Due to the complexities
+we added to our language, such as for loops, different types, string
+multiplication/division, etc. we gained a lot of knowledge and respect for how
+parsers actually work for complex languages.

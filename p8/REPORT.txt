@@ -1,0 +1,28 @@
+(1) Is the p8 architecture little-endian or big-endian. Does it matter?
+	For p8, my architecture uses the natural decision that information is stored little endian, meaning the most significant bit is stored in the highest address (ex. register[15] is the most significant register bit). Just like p7 Fundamentally it doesn't matter which endianess my architecture uses; just flip the interpretation and everything works fine. The biggest reason why little endian is prefered in this case is because 1) many default functions such as the $write function assumes information is stored little-endian, and 2) the endianess affects how information is stored/read in memory, since we are storing 16 bit information in 8bit wide memory, so the decision must be made if the more significant block should be written first or second im memory.
+
+(2) How many memory read and write ports are needed?
+	Only 1 read and 1 write, as the problem statement gave us.
+
+
+(3) How would you change your design if you were restricted to
+    at exactly one read port and one write port?
+	I basically implemented p7, but with multi-cycles. I had 4/5 states.
+		State 0: Read state. The program reads the PC line, and moves to State 1.
+		State 1: Action state. The program carries out the instruction to the fullest extent possible, including updating the PC. Of the 9 instructions, only load and store cannot be completed in this single cycle. All other instructions lead back to State 0. Store will store half the information into memory, and then enter State 2. Load enters State 3.
+		State 2: Store2. Program stores the second half of the program, and also reads PC's first half instruction. Transitions back to State 1 (since 1st half of instruction was read already, sort of like pipelining).
+		State 3: Write 1 and Write 2. State 3 has two parts, Write 1 and Write 2, each of which is responsible for reading half the memory. The state ends by transitioning to State 0.
+
+	It's important to note that since State 2 and 3 lose the original instruction line, all needed resources such as addresses and data are temporarily stored. Also, State 2 reads and writes to improve speed.
+
+4)? I assume question 4 is: Average CPI
+
+	First, I want to mention that a mundane way to double CPI is to run the program on pos and neg edges. Doing so is very easy, but provides little intellectual improvement over single edge cycles, because the result in real life would never matter (it would simply be overclocking the CPU, which is not the limiting factor in processing speed).
+
+	Subtraction takes 2 cycles.
+	Mov takes 2 cycles
+	Jumps take 2 cycles.
+	Load takes average 2 cycles. Even though a single Load takes 3 cycles, the third cycle simultaneously reads the next instruction, saving a cycle for the next action.
+	Store takes 4 cycles.
+
+	Assuming even distribution, average CPI is 2.222.... cycles per instruction. Barring extra memory to do additional storage of instructions that may never be used again, this is the fastest possible CPI, because the limiting factor is reading ports, and my architecture reads guarenteed to be used data from memory every single cycle, meaning it is impossible to reach faster CPI without sacraficing memory.

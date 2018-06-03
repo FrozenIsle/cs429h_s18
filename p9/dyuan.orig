@@ -1,0 +1,32 @@
+@0
+0 movl 6 1 1
+2 movl 15 13 2
+4 sub 1 2 3
+
+6 sub 3 0 0
+8 movl 0 0 1
+10 movl 0 0 2
+12 movl 0 0 3
+
+14 movl 6 1 1
+16 movl 6 6 2
+18 movl 1 10 4
+20 movl 2 2 5
+22 movl 15 15 6
+24 movl 15 11 3
+26 jump somthing 3 3 5
+28 sub 2 0 0
+30 sub 3 6 3
+32 jump somthing 0 0 4
+
+34 movl 0 10 7
+36 movh 15 15 7
+38 movl 0 12 8
+40 movh 15 15 8
+42 st/ld 7 1 1
+44 st/ld 8 1 2
+46 st/ld 8 0 9
+48 sub 9 0 0
+50 st/ld 7 0 9
+52 sub 9 0 0
+54 end

@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "go.h"
+
+void ints(Value v) {
+    int i = 0;
+    while (1) {
+        yield(asInt(i));
+        i++;
+    }
+}
+
+typedef struct StreamAndInt {
+    Stream* s;
+    int n;
+} StreamAndInt;
+
+void skipper(Value in) {
+    StreamAndInt* ptr = (StreamAndInt*) in.asPointer;
+    for (int i=0; i<ptr->n; i++) {
+        if (endOfStream(ptr->s)) break;
+        next(ptr->s);
+    }
+    while (!endOfStream(ptr->s)) {
+        yield(next(ptr->s));
+    }
+    free(in.asPointer);
+}
+
+Stream* skip(int n, Stream* s) {
+    StreamAndInt* ptr = malloc(sizeof(StreamAndInt));
+    ptr->s = s;
+    ptr->n = n;
+    return stream(skipper,asPointer(ptr));
+}    
+
+void taker(Value in) {
+    StreamAndInt* ptr = (StreamAndInt*) in.asPointer;
+    for (int i=0; (i<ptr->n); i++) {
+        if (endOfStream(ptr->s)) break;
+        yield(next(ptr->s));
+    }
+    free(in.asPointer);
+}
+
+Stream* take(int n, Stream* s) {
+    StreamAndInt* ptr = malloc(sizeof(StreamAndInt));
+    ptr->s = s;
+    ptr->n = n;
+    return stream(taker,asPointer(ptr));
+}
+
+
+int main() {
+    Stream *s = take(20,skip(1000000,stream(ints, asInt(0))));
+
+    while (!endOfStream(s)) {
+        int v = next(s).asInt;
+        printf("%d\n",v);
+    }
+
+    s = take(10,take(5,stream(ints,asInt(0))));
+
+    while (!endOfStream(s)) {
+        printf("%d\n",next(s).asInt);
+    }
+
+    return 0;
+}

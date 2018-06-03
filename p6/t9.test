@@ -1,0 +1,89 @@
+#include <stdio.h>
+#include "go.h"
+
+const char* rock[] = {
+    "Pink Floyd",
+    "The Doobie Brothers",
+    "The Who",
+    "The Clash",
+    "Deep Purple",
+    "Santana",
+    0
+};
+
+const char* classic[] = {
+    "Bach",
+    "Wagner",
+    "Mozart",
+    "Beethoven",
+    "Vivaldi",
+    0
+};
+
+const char* jazz[] = {
+    "Dave Brubeck",
+    "Keith Garrett",
+    "Jimmy Smith",
+    "Miles Davis",
+    0
+};
+
+shared_ptr<Channel<const char**>> genres(void) {
+    auto out = Channel<const char**>::make();
+    go([=]() {
+        out->send(rock);
+        out->send(jazz);
+        out->send(classic);
+        out->poison();
+    });
+    return out;
+}
+
+shared_ptr<Channel<const char*>> titlesForGenre(const char** genre) {
+    auto out = Channel<const char*>::make();
+    go([=]() {
+        int i = 0;
+        while (1) {
+            auto title = genre[i++];
+            if (title == 0) break;
+            out->send(title);
+        }
+        out->poison();
+    });
+    return out;
+}
+
+template <typename T, typename U>
+shared_ptr<Channel<U>> bind(shared_ptr<Channel<T>> st, shared_ptr<Channel<U>> (*func)(T)) {
+    auto out = Channel<U>::make();
+
+    go([=]() {
+        while (true) {
+            bool done = false;
+            auto t = st->receive(&done);
+            if (done) break;
+            auto su = func(t);
+            while (true) {
+                bool done = false;
+                auto u = su->receive(&done);
+                if (done) break;
+                out->send(u);
+            }
+        }
+        out->poison();
+    });
+
+    return out;
+}
+
+int main() {
+    auto ch = bind(genres(), titlesForGenre);
+    
+    while (1) {
+        bool done;
+        auto x = ch->receive(&done);
+        if (done) break;
+        printf("%s\n",x);
+    }
+    return 0;
+}

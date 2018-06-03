@@ -1,0 +1,47 @@
+(1) Discuss the hazards you had to deal with. For each:
+
+ - What type of hazard was it?
+
+ - Show an instruction sequence that exposes it
+
+ - What solutions did you consider?
+
+ - Which one did you pick? Why?
+
+
+	Hazard: Reading/Writing last addressable memory
+		Instruction: Reading from address ffff
+		Solution: Wrap around, using modulus, because it is the easiest.
+
+	Hazard: Multiple stages attempting to use same read/write port
+		Instruction: Executing movl AND load in the same cycle
+		Solution: The stage that is the deepest gets priority, and freezes the stage that also needs it. Best solution, beause the deepest stage works with the earliest instruction.
+
+	Hazard: Frozen stage becomes out of sync with register/memory data
+		Instruction: Movl is frozen in execute stage to allow load to execute in same cycle. Next cycle, reading from registers will be different.
+		Solution: Store data in local registers if the stage is to be frozen. Flush previous stages if adjacent previous stage is timing dependent. Allows stages to be frozen instead of flushed, speeding up processing, while maintaining correctness by flushing timing-dependent previous stages.
+
+	Hazard: Dealing with uknown instruction
+		Instruction: A undefined instruction reaches the decoder, yet previous instructions are still running
+		Solution: Freeze the decoder, and allow existing instructions to finish. If existing instructions don't unfreeze decoder, then the program ends.
+
+	Hazard: Read before write
+		Instruction: Oh my god. So many edge cases.
+		--Reading PC before jmps, or memory storages. Includes during loading.
+		--Reading registers before loading
+		--Doing anything before a jump
+			Solution: Flush the pipeline starting from the deepest Read before write. Maintains both correctness and speed. Certain stages, such as load1 or decode1, can be allowed to not flush, since they don't actually get the value until the next stage. Also, THE PROJECT IS VERY MISLEADING IN THAT EVEN THOUGH IT TAKES 2 CYCLES TO GET A MEMORY READ, THE DATA READ IS ACTUALLY ONLY 1 CYCLE OLD >:( 
+		
+
+	
+
+
+
+
+
+(2) Can your implementation handle misaligned memory references? Explain
+
+	Yes, and what the hell, the program took twice as long in time and 4 times as long in length to complete.
+	For misalignment, >:(
+		1) Fetching/Loading: simply use both read ports to contructin the full data in 1 cycle. If there are conflicts, executing loading, and freeze fetching.
+		2) Storing: To store on misaligned code, we need to take two cycles to write in both consecutive memory blocks. And of course (fk my life), we need to access the data in those memory blocks to partially edit them, meaning storing requires us to load as well. And of course, now we need to check if multiple blocks of memory were read to implement an instruction, to avoid read before rights.

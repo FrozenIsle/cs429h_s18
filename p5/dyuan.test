@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include <inttypes.h>
+
+#include "go.h"
+
+static Channel* start(uint64_t depth);
+
+void create() {
+    uint64_t depth = receive(me()).asU64;
+    Channel* parent = receive(me()).asChannel;
+    Channel* child = 0;
+    if (depth > 1) {
+        child = (Channel*) start(depth-1);
+    }
+
+    while (1) {
+        uint64_t v = receive(me()).asU64;
+		uint64_t v2 = 0;
+        if (child != 0) {
+            send(child,asU64(v+1));
+            v2 = receive(me()).asU64;
+        }
+//   		printf("%"PRIu64"\n",v);
+        send(parent,asU64(v+depth+v2));
+    }
+    printf("fail\n");
+}
+
+static Channel* start(uint64_t depth) {
+    Channel* next = go(create);
+    send(next,asU64(depth));
+    send(next,asChannel(me()));
+    return next;
+}
+    
+int main() {
+    Channel* first = start(1000000);
+	send(first, asU64(0));
+    printf("%"PRIu64"\n",receive(me()).asU64);
+	send(first, asU64(1));
+    printf("%"PRIu64"\n",receive(me()).asU64);
+
+    printf("done\n");
+
+    return 0;
+}

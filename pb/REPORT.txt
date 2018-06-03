@@ -1,0 +1,20 @@
+(1) Explain what you did in order to tune for performance of your balance()
+    function
+
+	In order to take advantage of caching, I tried to read the whole matrix row order, and insert all element above the diagonal in even-indexed positions in my "cache data structure", and all elements below the diagonal in odd-indexed positions. However, for some reason the computer couldn't handle creating an extra array larger than 800x1600, so instead I blocked the matrix into 400x400 blocks. Each block on the diagonal, I used my cache data structure (an 400x800 array) to check the diagonal blocks, and used another cache data structure to compare non-diagonal blocks that corresponded to each other. Finally, I manually checked all elements that did not fit into a dimension that was a multiple of 400.
+
+(2) What does the divide pipeline look like?
+	Divide has, stage wise, a very short pipeline, but cycle wise a very long one. We can infer this, because independent divide instructions and dependent divides take incredibly long (indicating that a single divide instruction must travel a long way to reach the end). According to my results, we can infer that the divide pipeline is around 60~ cycles deep, because that is how long depending instructions take, which is the most accurate description for a single path. Furthermore, we can infer that it since it takes around 25 instructions to do independent paths, that there are 2 or 3 stages in the divide pipleine that allow independent instructions to run a bit faster that dependent ones.
+
+(3) How many fixed-point unit does your processor have?
+	7. Starting with 1 divide, the program can handle 5 mults and 1 more add before slowing down
+(4) How many of them know how to add?
+	I infer 4, since there is significant time change between 4 and 5 independent add instructions
+(5) How many of them know how to divide?
+	I would infer 1, since 2 div instructions take around twice as long as 1 div instruction
+(6) How many of them know how to multiply?
+	I would infer 6, since the process time increases significantly every 6 independent mult instructions
+(7) How many load units does your processor have?
+	3, by same logic
+(8) Explain main's use of the "signal" function
+	SignalALRM sounds every 6 seconds, which allows a test to know it has run for 6 seconds, after which the handler lets the program know to stop, and the program stops.

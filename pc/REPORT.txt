@@ -1,0 +1,11 @@
+Compare C, Java, and Rust in terms of:
+
+- Different spaces (stack, global data, heap, ...)
+	In C, local variables, paramenters, etc. are all stored on the stack. The user can use malloc and the likes to manage the heap, and store objects there. Static.Global variables are stored in the data section
+	In Java, local variables/parameters are stored in stack. However, all objects are stored in the heap, and can only be referenced by references within stack frames. Global/static variables are stored in a permanent region of the heap
+	In Rust, local variables/parameters/references are stored in stack. However, "boxed" objects, using the box function, can be stored on the heap.
+- Dynamic allocation / deallocation
+	C allows the user to manually/dynamically allocation data onto the heap. Java does not. Rust implicity does not, but the use may use the "unsafe" blocks to dynamically manipulate memory.
+- Lifetime (how is it determined and how is it enforced)
+	In C, only local variable lifetimes are enforced, and disappear when the stack frame disappears. In Java, all heap data lifetimes are mangaed by a garbage collector, which deallocates the data space as soon as nothing references it. In Rust, their is a similar garbage collector. However, to improve performance, Rust only allows one "active/ownership" reference to a data space at one time, and frees the data as soon as nothing owns the object.
+

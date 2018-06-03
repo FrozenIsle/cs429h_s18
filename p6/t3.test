@@ -1,0 +1,22 @@
+#include <stdio.h>
+#include <inttypes.h>
+
+#include "go.h"
+
+int main() {
+    auto ch = Channel<long long>::make();
+    go([=]() {
+        for (uint64_t i=0; i<10; i++) {
+            ch->send(i);
+        }
+    });
+
+    while (1) {
+        auto v = ch->receive();
+        printf("received %lld\n",v);
+    }
+
+    printf("the impossible has happened\n");
+
+    return 0;
+}

@@ -1,0 +1,19 @@
+- What's the difference between a Java method and a C function?
+	Java methods are based off a class/object, and can access
+- How come C doesn't have methods?
+	C is a procedural language, not object oriented, and methods are only for objects.
+
+- What's the purpose of the Makefile?
+	Makefile is to speed the process of repeatedly compiling and testing code on multiple files, by automating the process.
+
+- Run the following sequence of commands
+
+     make clean
+     make test
+     make test
+
+   why does running "make test" the second time produce a different output?
+	make clean removes the .out files, so when the first make test is runned, the program sees that p1.o is missing and the test.out files are missing, so it runs the commands the compile p1 and create the test.out files, which creates the output test from the 1st make test. The 2nd time make test is run, the Makefile sees that nothing has changed since the creation of the .out/.o files, and so it skips those steps and just tests.
+
+- What is the time and space complexity of your implementation?
+	Time complexity is constant: it simply uses 3 step arithmetic to calculate the answer. Space complexity is also constant, for the same reason.

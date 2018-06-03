@@ -1,0 +1,112 @@
+Due date: 1/24/2018 @ 11:59pm
+
+Objective:
+~~~~~~~~~~
+
+- Become familiar with the project submission environment
+- Become familiar with simple C constructs
+
+Assignment:
+~~~~~~~~~~~
+
+(1) finish the implementation of p1
+(2) donate a test case
+(3) answer the questions in REPORT.txt
+
+Problem:
+~~~~~~~~
+
+An ant is placed at the origin of a 2-D surface and will be taking steps that zig-zag through the
+space as follows:
+
+    16  .......
+     | 
+    15 - 14 - 13 - 12
+                    |
+     4 -  5 -  6   11
+     |         |    |
+     3 -  2    7   10
+          |    |    |
+     0 -  1    8 -  9
+
+You need to write a program that takes a list of distances (each representing a number of step)
+and prints the (x,y) coordinates for each distance on a separate line
+
+for example:
+
+./p1 0
+0 (0,0)
+
+./p1 1
+1 (1,0)
+
+./p1 2
+2 (1,1)
+
+./p1 0 1 2 1000000
+0 (0,0)
+1 (1,0)
+2 (1,1)
+1000000 (0,1000)
+
+Rules
+~~~~~
+
+- Your program has to finish in 5 seconds or less
+- Distance is in the range 0 to 1,000,000,000,000
+
+Submitting a test
+~~~~~~~~~~~~~~~~~
+
+Add a pair of files named <your csid>.test and <your csid>.ok
+
+If your CSID is bob, the files will be called bob.test and bob.ok
+
+The test file contains the arguments to be passed to the program and the ok file contains the
+expected output. For example:
+
+bob.test
+0 1 2 1000000
+
+bob.ok
+0 (0,0)
+1 (1,0)
+2 (1,1)
+1000000 (0,1000)
+
+Look in t1.test and t1.ok for an example.
+
+Files you're allowed to change:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   p1.c
+   <csid>.test
+   <csid>.ok
+
+Files you're supposed to leave alone:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Everything else
+   
+To compile:
+~~~~~~~~~~~
+
+    make
+
+To run tests:
+~~~~~~~~~~~~~
+
+    make clean test
+
+To make the output less noisy:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    make -s clean test
+
+To debug with gdb
+~~~~~~~~~~~~~~~~~
+
+    make
+    gdb ./p1
+    (gdb) run "10 20 30"
+

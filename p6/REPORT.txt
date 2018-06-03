@@ -1,0 +1,11 @@
+- How does shared_ptr work? What C++ language mechanisms does it use in order
+  to implement its semantics
+
+	shared_ptr uses two pointers, one to the object, and one to a structure that contains the strong and weak references to the object. When the pointer is copied, shared_ptr counts that as a strong reference, and when a pointer is destroyed, shared_ptr decrements its count, so that if noone has references to the object, the object is deleted. Weak references can still exist, but they won't be able to reference the object, and the shared_ptr class will remain until ALL references are gone.
+
+- Read about structural vs. nominal typing, which one does the Queue class use?
+  Explain
+
+	
+	Queue, since it is used in c++, is a nominal type, since c++ is nominal. This means that for two different Queue objects, say Queue<int> and Queue<long>, the two types cannot mix. However, structurally they are actually the same, as Queue<int> and Queue<long> simply contain pointers, and all pointers are of same size. so if c++ were a structual language, type mixing between queues would work.
+

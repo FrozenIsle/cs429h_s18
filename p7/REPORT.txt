@@ -1,0 +1,15 @@
+(1) Is the p8 architecture little-endian or big-endian. Does it matter?
+	I am assuming this question is asking about p7. For p7, my architecture uses the natural decision that information is stored little endian, meaning the most significant bit is stored in the highest address (ex. register[15] is the most significant register bit). Fundamentally it doesn't matter which endianess my architecture uses; just flip the interpretation and everything works fine. The biggest reason why little endian is prefered in this case is because 1) many default functions such as the $write function assumes information is stored little-endian, and 2) the endianess affects how information is stored/read in memory, since we are storing 16 bit information in 8bit wide memory, so the decision must be made if the more significant block should be written first or second im memory.
+
+(2) How many memory read and write ports are needed?
+	I am assuming the question is asking how many r/w ports are needed for MY implementation. For memory, my implementation uses one read port to read the instructions, one write port to store in memory, and one read port to load from memory, so a total of 2 reads and 1 write. If you consider the register block as requiring r/w ports, then I use 2 read and 1 write port to interact with registers, for a total of 4 reads 1 write.
+
+
+(3) How would you change your design if you were restricted to
+    at exactly one read port and one write port?
+	If register interaction does not count, then we can use a single read port for the functionality of both reading instructions and loading memory data. All I need to change is to have a register store the "state" of the architecture, with the state switching between default state and loading state. That way, when we need to load memory, we save the pc, tell the architecture the next memory read is for loading, and after loading, we put the pc back in and tell the architecture to continue business as usual.
+
+	Now, if I were only allowed one read nad one write port for both memory AND register interaction, things would be a little more difficult. I should first mention that such a restriction wouldn't really make sense though, since architecture wise memory and registers should be separated. Basically, the solution is just like above, but we add MORE possible states to the state architecture, so that the architecture can alternate between interacting with registers, storing/loading memory, and reading instructions.
+
+	The drawback of all these solutions is 1) a more complicated architecture rule, since there are more states to jump between, and 2) instructions would take multiple cycles to finish, and overall speed will be slower.
+

@@ -1,0 +1,10 @@
+Team members:
+Xiangwei (David) Chen
+David Lai
+David Yuan
+
+What will you do?
+We want to add on to the fun language we created in p3. Namely, we want to include different data types like strings, doubles, characters, etc. We also want to
+incorporate local variables and global variables. Finally, we want to include parameters for functions, and then utilize them within the function but not
+affecting the variable that is being passed in.
+

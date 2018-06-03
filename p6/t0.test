@@ -1,0 +1,13 @@
+#include <stdio.h>
+
+#include "go.h"
+
+int main() {
+    auto out = Channel<int>::make();
+
+    printf("this should be the last line\n");
+    out->receive();
+    printf("should never see this\n");
+
+    return 0;
+}

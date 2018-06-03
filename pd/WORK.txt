@@ -1,0 +1,4 @@
+member             relative contribution
+Xiangwei Chen            30%
+David Lai                40%
+David Yuan               30%

@@ -1,0 +1,14 @@
+Explain what you did in order to achieve CPI < 1. What did you try?
+What worked? What didn't Work? Why didn't it work?
+
+There were two things that I tried to minimize CPI. One of them worked, on didn't :(
+
+1) Push CPI closer to 1
+	a) Stall certain stages instead of flushing, and forwarding (pretty obvious, no explanation needed)
+	b) Split execution of mov/sub/jmp from ld/st
+		I execute mov/sub/jmp right after decoding, so that it can finish faster. Of course, this means more hazard checks, but that's fine
+	c) Split execution of load from store
+		Load takes less stages than store, so I do a bit more hazard checking in return
+2) Double pipeline to read double instructions
+	Instead of only reading 1 PC at a time, I read 2, using both read ports, if the other read port isn't being used. However, I encountered several problems I could not fix in time. The easy part was doing the actually reading. With a few conditionals, some copy pasting code, I could instantly generate another pipeline. The problem comes from the interaction between the two pipelines. I found it very, very difficult to determine which stage of which pipeline had "older PC" than the other stages, since the pipelines took in alternate instructions. The best solution, which I think if I had just a couple days more to work with, would be a zig-zag priority. I would make pipeline A take in the first instruction, B the next, C the one after, so on so forth. So priority between the stages would work like, if A and B are same stage, then stage in A is "older", and has priority, but a stage in B is still "older" than any OTHER, more SHALLOW stage in A. This is what I tried to implement, but ran into a bunch of bugs I could not debug in time. But the spirit of the hazard check is the same as a single pipeline, just more coding.
+

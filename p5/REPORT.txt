@@ -1,0 +1,17 @@
+- Is there a reliable way of freeing the memory associated with c-routine?
+  explain how you did it
+
+	Well, I didn't do it, and I just let the memory sit in the heap. I believe that in order to free the routine, you will need to create a separate "freeing routine" to free other routines. This is because, if you attempt to free a routine within itself, the program will destroy itself. So, we make a special routine that 1) frees the target routine's stack, and 2) puts the routine in the zombie queue, so that it will be impossible to call it again (and accidentally go into a free'd stack).
+
+- Is there a reliable way of freeing the memory associated with a channel?
+  explain how you did it
+
+	The problem with freeing a channel is that the outside program may still have a pointer to it, and as far as I can tell, it is impossible to do standardly. A hack may be to have all "Channel" pointers not be actually pointers to channels, but instead have then point to a "channel hub," which contains the pointers to the actual channels. That way, when we free a channel, the user given "pointer" will now redirect into an empty slot in the channel hub, and we can give some type of error report.
+
+- What is a continuation? Did you implement one? explain
+	Continations are the state of a program. They are functions that represent the remaining code to be executed, and can be passed into other functions. In our project, the return address + registers that magic() pushes is our continuation; they represent the state of the program at certain times, and allow us to jump between different states.
+
+- What is a closure? Did you implement one? explain
+
+	Closure are functions that have variables that persist between function calls. Unlike a continuation, closure's are not independent states, but a single state that can be called multiple times. In our project, many methods of go.c are closure methods, because they interact with the Queues (ready, zombies, etc). Different calls all share that same Queue states, and when a Queue is changed, it is changed for all continuations that call go.c functions.
+

@@ -1,0 +1,116 @@
+Due date:
+    2/6/2018 @ 11:59pm for test case
+    2/7/2018 @ 11:59pm working code and report
+
+Objective:
+~~~~~~~~~~
+
+- work with files
+- understand how functions are implemented
+
+Assignment:
+~~~~~~~~~~~
+
+(1) Answer the question in REPORT.txt
+
+(2) Add a test case (<csid>.fun and <csid>.ok, less then 2000 characters each)
+
+(3) Finish the interpreter for a simple language
+
+The language is the same as in p2 with a few changes:
+
+- remove all uses of ";" (for simplicity)
+
+- add function definition and function call syntax
+
+- the interpreter reads its input from a file, allowing proper indentation
+  and new lines
+
+Defining a function:
+~~~~~~~~~~~~~~~~~~~~
+
+A new type of expression is added to the language as follows:
+
+   fun <statement>
+
+A "fun" expression returns an opaque 64 bit quantity. The only meaningful
+thing you can do with the result is to store it in a variable and use it later
+to call the function. You can't make any assumptions about the returned value
+from defining a function (function handle) other than it will be a 64 bit
+quantity.
+
+For example:
+
+  x = fun print 125
+
+    defines a function with "print 125" as its body and stores its handle in "x"
+
+  y = fun {
+        abc = 100
+        pqr = 200
+      }    
+
+    defines a function that sets the values of "abc" and "pqr" and stores its
+    handle in "y"
+
+Calling a function:
+~~~~~~~~~~~~~~~~~~~
+
+   A call statement is added to the language:
+
+       <identifier> ()
+
+   <identifier> has to contain a value returned by "fun".
+
+   The call statement executes the body associated with the function then
+   continues
+
+For example:
+
+    x()
+    x()
+
+  prints
+
+    125
+    125
+
+Command line arguments:
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The interpreter (p3) takes a single file name. That file contains the program
+we need to run.
+
+For example:
+
+    ./p3 t5.fun
+
+  runs the program in the file named t5.fun in the current directory
+
+To compile:
+~~~~~~~~~~~
+
+    make
+
+To run test:
+~~~~~~~~~~~~
+
+    make clean test
+
+To run one test (e.g. t1):
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    make clean t1.result
+
+To make the output less noisy:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    make -s clean test
+
+To debug with gdb
+~~~~~~~~~~~~~~~~~
+
+    make
+    gdb ./p3
+    (gdb) run t0.fun
+

@@ -1,0 +1,11 @@
+- What is the difference between a C struct and a Java class?
+	C structs simply bind different variables together. Java classes, on the other hand, are much more powerful, because they are actually objects, and can hold methods as well as participate in inheritance.
+
+- What is the complexity of strlen? Can you think of a design
+  that would make it O(1)?
+	I didn't use strlen. In fact, I never stored any strings in new memory, only using the command line input as storage. As a result, when comparing strings I simply look until a wrong character appears. Ex. Identifiers terminate upon a non-alphanumeric character.
+
+- The error() function calls longjmp. What does longjmp do? Java
+  has a similar construct, what is it? Compare the two
+	longjmp, when called, jumps to the point in the code that has setjmp, and returns the given value (usually 1) rather than 0. This is similar to the try/catch system in Java, as both allows the user to execute code blocks upon errors. However, longjmp is weaker, and cannot directly support uses such as catching specific errors, finally blocks, and pushing errors up a call stack. Furthermore longjmp requires the user to anticipate the type of error, and is unable to directly handle un-expected errors. Of course, all of these implementations can be manually coded.
+

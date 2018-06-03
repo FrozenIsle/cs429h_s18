@@ -1,0 +1,38 @@
+#include <stdio.h>
+#include <inttypes.h>
+
+#include "go.h"
+
+static shared_ptr<Channel<uint64_t>> start(uint64_t depth){
+	auto parent = Channel<uint64_t>::make();
+	go([=](){
+		auto child = parent;
+		if(depth > 1)
+			child = start(depth - 1);
+		while(1){
+			uint64_t v = parent->receive();
+			uint64_t v2 = 0;
+			if(child != parent){
+				child->send(v);
+				v2 = child->receive();
+			}
+			parent->send(v + depth + v2);
+		}
+		printf("failed\n");
+	});
+	return parent;
+}
+
+int main() {
+    auto first = start(2200000);
+	first->send(0);
+    printf("%" PRIu64 "\n",first->receive());
+	first->send(1);
+    printf("%" PRIu64 "\n",first->receive());
+
+    printf("done\n");
+
+    return 0;
+}
+
+

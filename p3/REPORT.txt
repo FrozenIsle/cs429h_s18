@@ -1,0 +1,6 @@
+Propose a language extension and an implementation that would allow local
+variables and function arguments
+
+Local variables are easy; simply make a hash table for each function call (called via statement), and boom, local variables.
+
+To make fucntion arguments, first make arrays of local variable identifiers when creating the function through fun. Then, when calling the function, store the arguments into the local variables, mapping the nth argument to the nth local identifier.
